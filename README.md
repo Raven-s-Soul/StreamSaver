@@ -24,3 +24,29 @@
 >### Running StreamSaver.py
 > The downloads will start with the name of 1.mp4 to x.mp4
 >> you can select at start what is the starter number.
+***
+## Alternatives (Those are prone to audio errors)
+>Single console command: 
+>```python
+>yt-dlp <url> -o <filename.mp4>
+>```
+
+>Script: 
+>```python
+>import os
+>
+>i = 1
+>while True:
+>    user_input = input("Enter a URL or 'exit' to quit: ")
+>    
+>    if user_input.lower() == "exit":
+>        print("Exiting the loop.")
+>        break
+>
+>    output_filename = f"{i}.mp4"  # Format the output filename dynamically with 'i'
+>    
+>    # Run yt-dlp with the given URL and output filename
+>    s = os.system(f'yt-dlp "{user_input}" -o "{output_filename}"')
+>    if(s == 0)
+>        i += 1
+>```
