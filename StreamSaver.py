@@ -52,7 +52,7 @@ def get_video_duration(user_input):
     if result.returncode != 0:
         print_colored("Error: Unable to get video duration.", "red")
         print_colored(result.stderr, "red")  # Print any error message
-        return None
+        return -1
 
     # Parse the duration from the output
     return round(float(result.stdout.strip()))
@@ -82,7 +82,9 @@ def CoreLogic():
 
         output_filename = f"{i}"
         duration = get_video_duration(user_input)
-        
+        if duration == -1:
+            continue
+            
         # yt-dlp -x --audio-format mp3 "" -o output.mp3
         a = os.system(f'yt-dlp -x --audio-format mp3 "{user_input}" -o "{output_filename}A.mp3"')
         if a != 0:
@@ -91,8 +93,10 @@ def CoreLogic():
         
         # strip audio to last duration
         WrongDuration = get_video_duration(f'{output_filename}A.mp3')
+        if WrongDuration == -1:
+            continue
+
         # ffmpeg -i input_audio.mp3 -ss 00:01:30 -t 00:02:00 -c copy output_audio.mp3
-        
         s = os.system(f'ffmpeg -i {output_filename}A.mp3 -ss {seconds_to_hms(WrongDuration-duration)} -t {seconds_to_hms(WrongDuration)} -c copy {output_filename}AF.mp3')
         if s != 0:
             continue
@@ -107,6 +111,7 @@ def CoreLogic():
         
         # combine ffmpeg     
         combine_streams(f'{output_filename}V.mp4',f'{output_filename}AF.mp3',f'{output_filename}.mp4')
+        
         i += 1
         
     
