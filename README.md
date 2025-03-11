@@ -24,6 +24,10 @@
 >### Running [StreamSaver.py](/StreamSaver.py)
 > The downloads will start with the name of 1.mp4 to x.mp4
 >> you can select at start what is the starter number.
+
+> [!WARNING]
+> Do not download more than 3 request at the same time, you may risk get ip banned or else.
+>- Suggest to wait a little when downloading in big chunks.
 ***
 ## Alternatives (Those are prone to audio errors)
 >Single console command: 
