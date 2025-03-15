@@ -34,6 +34,7 @@ def combine_streams(video_path, audio_path, output_path):
     except subprocess.CalledProcessError:
         print_colored("FFmpeg failed to combine audio and video. Please ensure it is installed.", "red")
     finally:
+        print("Done")
         os.remove(video_path)
         os.remove(audio_path)
 
@@ -72,9 +73,25 @@ def CoreLogic():
     except ValueError:
         i = 1  # Default to 1 if the input is invalid
     
+    lista = []
+    
     while True:
-        print_colored("Enter a URL or 'exit' to quit: ", "yellow")
+        print_colored("add to a list or 'exit'", "green")
         user_input = input()
+        
+        if "http" in user_input:
+            lista.append(user_input.strip()) # cleaned input
+        
+        if user_input.lower() == "exit":
+            print_colored("Exiting the loop.", "yellow")
+            break    
+    
+    while True:
+        if not lista:
+            print_colored("Enter a URL or 'exit' to quit: ", "yellow")
+            user_input = input()
+        else:
+            user_input = lista.pop(0)
     
         if user_input.lower() == "exit":
             print_colored("Exiting the loop.", "yellow")
@@ -82,6 +99,10 @@ def CoreLogic():
 
         output_filename = f"{i}"
         duration = get_video_duration(user_input)
+        if duration == -1 and lista:
+            i += 1
+            print_colored("Error found, skip", "cyan")
+            continue
         if duration == -1:
             continue
             
