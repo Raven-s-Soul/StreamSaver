@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 from colorama import just_fix_windows_console
 
 def print_colored(text, color):
@@ -11,12 +12,16 @@ def print_colored(text, color):
         'purple': '\033[35m',
         'cyan': '\033[36m',
         'white': '\033[37m',
-        'reset': '\033[0m'  # Reset to default color
+        'reset': '\033[0m'
     }
     print(f"{colors.get(color, colors['reset'])}{text}{colors['reset']}")
 
-#Combines video and audio streams using FFmpeg
 def combine_streams(video_path, audio_path, output_path):
+    # Controlla se ffmpeg è disponibile
+    if shutil.which('ffmpeg') is None:
+        print_colored("Errore: ffmpeg non è installato o non è nel PATH.", "red")
+        return
+
     try:
         subprocess.run(
             [
@@ -32,30 +37,49 @@ def combine_streams(video_path, audio_path, output_path):
         )
         print_colored(f"Combined video saved: {output_path}", "green")
     except subprocess.CalledProcessError:
-        print_colored("FFmpeg failed to combine audio and video. Please ensure it is installed.", "red")
+        print_colored("FFmpeg non è riuscito a combinare audio e video. Assicurati che sia installato correttamente.", "red")
     finally:
-        os.remove(video_path)
-        os.remove(audio_path)
+        # Usa try/except per evitare errori se i file non esistono
+        try:
+            os.remove(video_path)
+        except Exception:
+            pass
+        try:
+            os.remove(audio_path)
+        except Exception:
+            pass
 
 def get_video_duration(user_input):
-    # ffprobe -i "video_url_or_file" -show_entries format=duration -v quiet -of csv="p=0
+    # Verifica che ffprobe sia disponibile
+    if shutil.which('ffprobe') is None:
+        print_colored("Errore: ffprobe non è installato o non è nel PATH. Installa ffmpeg per ottenere ffprobe.", "red")
+        return -1
+
     command = [
         'ffprobe', '-i', user_input, 
         '-show_entries', 'format=duration',
         '-v', 'quiet',
-        '-of', 'csv=p=0'  
+        '-of', 'csv=p=0'
     ]
     
-    # Run the command and capture the output
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    # Check if there's an error
+    try:
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    except FileNotFoundError as e:
+        print_colored(f"Errore: {e}. Assicurati che ffprobe sia installato e nel PATH.", "red")
+        return -1
+    
     if result.returncode != 0:
-        print_colored("Error: Unable to get video duration.", "red")
-        print_colored(result.stderr, "red")  # Print any error message
+        print_colored("Errore: Impossibile ottenere la durata del video.", "red")
+        print_colored(result.stderr, "red")
         return -1
 
-    # Parse the duration from the output
-    return round(float(result.stdout.strip()))
+    try:
+        duration = round(float(result.stdout.strip()))
+    except ValueError:
+        print_colored("Errore: Impossibile interpretare la durata del video.", "red")
+        return -1
+
+    return duration
     
 def seconds_to_hms(seconds):
     hours = seconds // 3600
@@ -64,13 +88,12 @@ def seconds_to_hms(seconds):
     return f"{hours:02}:{minutes:02}:{seconds:02}"
 
 def CoreLogic():
-    #Iter
     print_colored("Set starting iterator number", "red")
     user_input = input()
     try:
         i = int(user_input)
     except ValueError:
-        i = 1  # Default to 1 if the input is invalid
+        i = 1  # Default to 1 if input is invalid
     
     while True:
         print_colored("Enter a URL or 'exit' to quit: ", "yellow")
@@ -85,36 +108,39 @@ def CoreLogic():
         if duration == -1:
             continue
             
-        # yt-dlp -x --audio-format mp3 "" -o output.mp3
+        # Estrae l'audio con yt-dlp
         a = os.system(f'yt-dlp -x --audio-format mp3 "{user_input}" -o "{output_filename}A.mp3"')
         if a != 0:
             continue
-        print_colored("Audio", "yellow")
+        print_colored("Audio estratto", "yellow")
         
-        # strip audio to last duration
-        WrongDuration = get_video_duration(f'{output_filename}A.mp3')
-        if WrongDuration == -1:
+        # Controlla la durata dell'audio estratto
+        wrong_duration = get_video_duration(f'{output_filename}A.mp3')
+        if wrong_duration == -1:
             continue
 
-        # ffmpeg -i input_audio.mp3 -ss 00:01:30 -t 00:02:00 -c copy output_audio.mp3
-        s = os.system(f'ffmpeg -i {output_filename}A.mp3 -ss {seconds_to_hms(WrongDuration-duration)} -t {seconds_to_hms(WrongDuration)} -c copy {output_filename}AF.mp3')
+        # Usa ffmpeg per tagliare l'audio
+        start_time = seconds_to_hms(wrong_duration - duration)
+        s = os.system(f'ffmpeg -i {output_filename}A.mp3 -ss {start_time} -t {seconds_to_hms(wrong_duration)} -c copy {output_filename}AF.mp3')
         if s != 0:
             continue
-        os.remove(f'{output_filename}A.mp3')
-        print_colored("Cut Audio", "cyan")
+        try:
+            os.remove(f'{output_filename}A.mp3')
+        except Exception:
+            pass
+        print_colored("Audio tagliato", "cyan")
         
-        # yt-dlp -f bv "input" -o outputvideo.mp4 
+        # Estrae il video con yt-dlp
         v = os.system(f'yt-dlp -f bv "{user_input}" -o "{output_filename}V.mp4"')
         if v != 0:
             continue
-        print_colored("Video", "yellow")
+        print_colored("Video estratto", "yellow")
         
-        # combine ffmpeg     
-        combine_streams(f'{output_filename}V.mp4',f'{output_filename}AF.mp3',f'{output_filename}.mp4')
+        # Combina video e audio
+        combine_streams(f'{output_filename}V.mp4', f'{output_filename}AF.mp3', f'{output_filename}.mp4')
         
         i += 1
         
-    
 if __name__ == "__main__":
-    just_fix_windows_console() #it’s safe to call this function on non-Windows platforms
+    just_fix_windows_console()  # È sicuro chiamare questa funzione anche su piattaforme non-Windows
     CoreLogic()
