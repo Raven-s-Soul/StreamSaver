@@ -20,6 +20,11 @@
 >>pip install -r requirements.txt
 >>```
 
+> [!TIP]
+> ## FFmpeg
+> An open-source tool for converting, editing, and streaming video and audio files in different formats.
+>> [Download page](https://www.ffmpeg.org/download.html).
+
 > [!CAUTION]
 >### Running [StreamSaver.py](/StreamSaver.py)
 > The downloads will start with the name of 1.mp4 to x.mp4
