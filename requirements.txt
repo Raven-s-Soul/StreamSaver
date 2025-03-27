@@ -1,3 +1,2 @@
 colorama==0.4.6
-ffmpeg==1.4
 yt-dlp==2025.2.19
