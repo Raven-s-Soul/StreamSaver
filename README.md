@@ -8,6 +8,7 @@
 ## How to Use
 > [!IMPORTANT]
 >### 1. [Tampermonkey](https://www.tampermonkey.net/)
+> A browser extension across all major browsers that makes it easy to find and install userscripts created by other users.
 >> For download with this setup, is needed to have a `url`, you can get it `manualy` or with a `script` using Tampermonkey.
 >>
 >>> [Add-on/plug-in](https://www.tampermonkey.net/), then just open [the file](/Video-Manifest-Logger.user.js) and copy all the content into a new tampermonkey script.
