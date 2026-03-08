@@ -30,10 +30,13 @@
 >>>```bash
 >>>python -m venv .venv
 >>>```
->>>Activation
+>>>Activation (Mac/Linux)
 >>>```bash
->>>.venv/bin/activate (Mac/Linux)
->>>.venv\Scripts\activate (Windows)
+>>>.venv/bin/activate
+>>>```
+>>>Activation (Windows)
+>>>```bash
+>>>.venv\Scripts\activate
 >>>```
 >>
 >>>You can do this by running the following command in your terminal:
