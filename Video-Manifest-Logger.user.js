@@ -26,11 +26,14 @@
             console.log("Resource Entries: ", resourceEntries);
 
             // Look for videomanifest requests
+            // Filtering logs by "from Tampermonkey" can be useful
             resourceEntries.forEach((entry) => {
+                console.log("Meaby found from Tampermonkey");
                 if (entry.name.includes('videomanifest?provider')) {
                     let cleanUrl = entry.name.split('&altManifestMetadata')[0];
-                    console.log('Found video manifest URL:', cleanUrl);
+                    console.log('Found video manifest URL:', cleanUrl, ' from Tampermonkey');
                     copyToClipboard(cleanUrl);
+                    console.log("Found from Tampermonkey");
                     GM_notification ( { title: 'Found the manifest!', text: 'Now Paste'} );
                     return;
                 }
