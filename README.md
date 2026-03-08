@@ -25,6 +25,17 @@
 >### 4. Install Dependencies
 >>You need to install the [required dependencies](/requirements.txt) as **administrator** (suggested). 
 >>
+>>>#### [Python Virtual Environment - venv](https://docs.python.org/3/library/venv.html) (Optional (console only) - you will need to activate everytime)
+>>>Directory for virtual environment
+>>>```bash
+>>>python -m venv .venv
+>>>```
+>>>Activation
+>>>```bash
+>>>.venv/bin/activate (Mac/Linux)
+>>>.venv\Scripts\activate (Windows)
+>>>```
+>>
 >>>You can do this by running the following command in your terminal:
 >>>
 >>>```bash
@@ -33,6 +44,11 @@
 
 > [!CAUTION]
 >### 5. Running [StreamSaver.py](/StreamSaver.py)
+>>If you are using venv, you can only run the code in this way
+>>```bash
+>>python StreamSaver.py
+>>```
+>>
 > The downloads will start with the name of 1.mp4 to x.mp4
 >> you can select at start what is the starter number.
 
