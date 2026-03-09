@@ -1,0 +1,25 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environment ---
+.venv/
+venv/
+env/
+
+# --- Media Files (Tutto quello che scarica lo script) ---
+*.mp3
+*.mp4
+*.webm
+*.m4a
+
+# --- yt-dlp Temporary Files ---
+*.part
+*.ytdl
+
+# --- OS & Editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
