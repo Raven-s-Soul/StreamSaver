@@ -67,20 +67,16 @@
 
 >Script: 
 >```python
->import os
+>import subprocess
 >
 >i = 1
 >while True:
->    user_input = input("Enter a URL or 'exit' to quit: ")
->    
->    if user_input.lower() == "exit":
->        print("Exiting the loop.")
->        break
+>    user_input = input("Enter a URL or 'exit' to quit: ").strip()
+>    if user_input.lower() == "exit": break
 >
->    output_filename = f"{i}.mp4"  # Format the output filename dynamically with 'i'
+>    output_filename = f"{i}.mp4"
+>    result = subprocess.run(['yt-dlp', user_input, '-o', output_filename])
 >    
->    # Run yt-dlp with the given URL and output filename
->    s = os.system(f'yt-dlp "{user_input}" -o "{output_filename}"')
->    if(s == 0)
+>    if result.returncode == 0:
 >        i += 1
 >```
